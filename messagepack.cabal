@@ -1,19 +1,21 @@
-name          : messagepack
-version       : 0.1.0.0
-synopsis      : Serialize instance for Message Pack Object
-description   : Serialize instance for Message Pack Object
-homepage      : https://github.com/rodrigosetti/messagepack
-license       : MIT
-license-file  : LICENSE
-author        : Rodrigo Setti
-stability     : experimental
-bug-reports   : https://github.com/rodrigosetti/messagepack/issues
-package-url   : https://github.com/rodrigosetti/messagepack/archive/master.zip
-maintainer    : rodrigosetti@gmail.com
-copyright     : (c) 2014 Rodrigo Setti
-category      : Data
-build-type    : Simple
-cabal-version : >=1.10
+name               : messagepack
+version            : 0.1.0.0
+synopsis           : Serialize instance for Message Pack Object
+description        : Serialize instance for Message Pack Object
+homepage           : https://github.com/rodrigosetti/messagepack
+license            : MIT
+license-file       : LICENSE
+author             : Rodrigo Setti
+stability          : experimental
+bug-reports        : https://github.com/rodrigosetti/messagepack/issues
+package-url        : https://github.com/rodrigosetti/messagepack/archive/master.zip
+maintainer         : rodrigosetti@gmail.com
+copyright          : (c) 2014 Rodrigo Setti
+category           : Data
+build-type         : Simple
+cabal-version      : >=1.10
+extra-source-files : CHANGELOG
+                   , README.md
 
 source-repository head
   type     : git

@@ -1,3 +1,18 @@
+{-|
+Module      : Data.MessagePack
+Description : Object data type with Serialize instances for it
+Copyright   : (c) Rodrigo Setti, 2014
+License     : MIT
+Maintainer  : rodrigosetti@gmail.com
+Stability   : experimental
+Portability : portable
+
+@Object@ is a message pack object, and it have constructors for all message
+pack types.
+
+The @Serialize@ instances define how Object values may be serialized and
+deserialized to message pack binary format, following the specification.
+-}
 module Data.MessagePack where
 
 import Control.Applicative

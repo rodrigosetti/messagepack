@@ -1,3 +1,15 @@
+{-|
+Module      : Data.MessagePack.Spec
+Description : Message Pack specification values
+Copyright   : (c) Rodrigo Setti, 2014
+License     : MIT
+Maintainer  : rodrigosetti@gmail.com
+Stability   : experimental
+Portability : portable
+
+Define, in a single place, all the message-pack specification binary type
+markers.
+-}
 module Data.MessagePack.Spec where
 
 import Data.Word

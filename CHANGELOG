@@ -1,0 +1,5 @@
+2014-07-25 Rodrigo Setti <rodrigosetti@gmail.com>
+
+	* Initial version: Serialize instances tested for consistency.
+	* Missing: Extension types
+
