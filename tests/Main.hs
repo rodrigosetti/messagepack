@@ -15,15 +15,15 @@ main :: IO ()
 main = $(defaultMainGenerator)
 
 instance Arbitrary Object where
-    arbitrary = resize 6 $ oneof [ return ObjectNil
-                                 , ObjectInt    <$> arbitrary
-                                 , ObjectBool   <$> arbitrary
-                                 , ObjectFloat  <$> arbitrary
-                                 , ObjectDouble <$> arbitrary
-                                 , ObjectString <$> arbitrary
-                                 , ObjectBinary <$> arbitrary
-                                 , ObjectArray  <$> arbitrary
-                                 , ObjectMap    <$> arbitrary ]
+    arbitrary = sized $ \n -> oneof [ return ObjectNil
+                                    , ObjectInt    <$> arbitrary
+                                    , ObjectBool   <$> arbitrary
+                                    , ObjectFloat  <$> arbitrary
+                                    , ObjectDouble <$> arbitrary
+                                    , ObjectString <$> arbitrary
+                                    , ObjectBinary <$> arbitrary
+                                    , ObjectArray  <$> resize (3 * n `quot` 4) arbitrary
+                                    , ObjectMap    <$> resize (3 * n `quot` 4) arbitrary ]
 
     shrink (ObjectString s) = map ObjectString $ shrink s
     shrink (ObjectBinary b) = map ObjectBinary $ shrink b
