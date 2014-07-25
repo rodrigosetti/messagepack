@@ -1,0 +1,12 @@
+.cabal-sandbox/
+.travis.yml
+CHANGELOG
+Data/
+LICENSE
+README.md
+Setup.hs
+cabal.sandbox.config
+dist/
+messagepack.cabal
+messagepack.haddock
+tests/
