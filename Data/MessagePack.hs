@@ -60,7 +60,7 @@ instance Serialize Object where
     put (ObjectDouble d)   = putWord8 float64 >> putFloat64be d
 
     put (ObjectString t) =
-        header >> mapM_ put (BS.unpack bytes)
+        header >> putByteString bytes
      where
         bytes = encodeUtf8 t
         size  = BS.length bytes
@@ -70,10 +70,10 @@ instance Serialize Object where
           | size < 0x10000 = putWord8 str16 >> putWord16be (fromIntegral size)
           | otherwise      = putWord8 str32 >> putWord32be (fromIntegral size)
 
-    put (ObjectBinary b) =
-        header >> mapM_ put (BS.unpack b)
+    put (ObjectBinary bytes) =
+        header >> putByteString bytes
       where
-        size  = BS.length b
+        size  = BS.length bytes
         header
           | size < 0x100   = putWord8 bin8  >> putWord8 (fromIntegral size)
           | size < 0x10000 = putWord8 bin16 >> putWord16be (fromIntegral size)
@@ -106,11 +106,11 @@ instance Serialize Object where
           | k == true                         = return $ ObjectBool True
 
           | k == bin8                         = do n <- fromIntegral <$> getWord8
-                                                   ObjectBinary <$> getBytes n
+                                                   ObjectBinary <$> getByteString n
           | k == bin16                        = do n <- fromIntegral <$> getWord16be
-                                                   ObjectBinary <$> getBytes n
+                                                   ObjectBinary <$> getByteString n
           | k == bin32                        = do n <- fromIntegral <$> getWord32be
-                                                   ObjectBinary <$> getBytes n
+                                                   ObjectBinary <$> getByteString n
 
           | k == float32                      = ObjectFloat  <$> getFloat32be
           | k == float64                      = ObjectDouble <$> getFloat64be
@@ -127,13 +127,13 @@ instance Serialize Object where
           | k == int64                        = ObjectInt <$> fromIntegral <$> (get :: Get Int64)
 
           | k .&. fixstrMask    == fixstr     = let n = fromIntegral $ k .&. complement fixstrMask
-                                                in  ObjectString <$> decodeUtf8 <$> getBytes n
+                                                in  ObjectString <$> decodeUtf8 <$> getByteString n
           | k == str8                         = do n <- fromIntegral <$> getWord8
-                                                   ObjectString <$> decodeUtf8 <$> getBytes n
+                                                   ObjectString <$> decodeUtf8 <$> getByteString n
           | k == str16                        = do n <- fromIntegral <$> getWord16be
-                                                   ObjectString <$> decodeUtf8 <$> getBytes n
+                                                   ObjectString <$> decodeUtf8 <$> getByteString n
           | k == str32                        = do n <- fromIntegral <$> getWord32be
-                                                   ObjectString <$> decodeUtf8 <$> getBytes n
+                                                   ObjectString <$> decodeUtf8 <$> getByteString n
 
           | k .&. fixarrayMask  == fixarray   = let n = fromIntegral $ k .&. complement fixarrayMask
                                                 in  ObjectArray <$> replicateM n get
