@@ -2,11 +2,11 @@ module Data.MessagePack.Spec where
 
 import Data.Word
 
-posFixintMask = 0x7f    -- 01111111
-negFixinkMask = 0x1f    -- 00011111
-fixmapMask    = 0x0f    -- 00001111
-fixarrayMask  = 0x0f    -- 00001111
-fixstrMask    = 0x1f    -- 00011111
+posFixintMask = 0x80    -- 10000000
+negFixintMask = 0xe0    -- 11100000
+fixmapMask    = 0xf0    -- 11110000
+fixarrayMask  = 0xf0    -- 11110000
+fixstrMask    = 0xe0    -- 11100000
 
 posFixint = 0x00        -- 0xxxxxxx
 negFixint = 0xe0        -- 111xxxxx
@@ -46,7 +46,7 @@ map16     = 0xde        -- 11011110
 map32     = 0xdf        -- 11011111
 
 posFixintMask :: Word8
-negFixinkMask :: Word8
+negFixintMask :: Word8
 fixmapMask    :: Word8
 fixarrayMask  :: Word8
 fixstrMask    :: Word8

@@ -20,7 +20,7 @@ data Object = ObjectInt Int
             | ObjectBinary BS.ByteString
             | ObjectArray  [Object]
             | ObjectMap    (M.Map Object Object )
-    deriving (Eq, Ord)
+    deriving (Eq, Ord, Show)
 
 instance Serialize Object where
 
@@ -45,8 +45,8 @@ instance Serialize Object where
     put (ObjectDouble d)   = putWord8 float64 >> putFloat64be d
 
     put (ObjectString t) =
-        header >> putByteString bytes
-      where
+        header >> mapM_ put (BS.unpack bytes)
+     where
         bytes = encodeUtf8 t
         size  = BS.length bytes
         header
@@ -56,16 +56,16 @@ instance Serialize Object where
           | otherwise      = putWord8 str32 >> putWord32be (fromIntegral size)
 
     put (ObjectBinary b) =
-        header >> putByteString b
+        header >> mapM_ put (BS.unpack b)
       where
         size  = BS.length b
         header
-          | size < 0x100   = putWord8 bin8  >> putWord16be (fromIntegral size)
+          | size < 0x100   = putWord8 bin8  >> putWord8 (fromIntegral size)
           | size < 0x10000 = putWord8 bin16 >> putWord16be (fromIntegral size)
           | otherwise      = putWord8 bin32 >> putWord32be (fromIntegral size)
 
     put (ObjectArray a)    =
-        buildArray >> put a
+        buildArray >> mapM_ put a
       where
         size = length a
         buildArray
@@ -74,7 +74,7 @@ instance Serialize Object where
           | otherwise      = putWord8 array32 >> putWord32be (fromIntegral size)
 
     put (ObjectMap m)      =
-        buildMap >> put m
+        buildMap >> mapM_ put (M.toList m)
       where
         size = M.size m
         buildMap
@@ -101,7 +101,7 @@ instance Serialize Object where
           | k == float64                      = ObjectDouble <$> getFloat64be
 
           | k .&. posFixintMask == posFixint  = return $ ObjectInt $ fromIntegral k
-          | k .&. negFixinkMask == negFixint  = return $ ObjectInt $ fromIntegral k
+          | k .&. negFixintMask == negFixint  = return $ ObjectInt $ fromIntegral (fromIntegral k :: Int8)
           | k == uint8                        = ObjectInt <$> fromIntegral <$> getWord8
           | k == uint16                       = ObjectInt <$> fromIntegral <$> getWord16be
           | k == uint32                       = ObjectInt <$> fromIntegral <$> getWord32be
@@ -111,7 +111,7 @@ instance Serialize Object where
           | k == int32                        = ObjectInt <$> fromIntegral <$> (get :: Get Int32)
           | k == int64                        = ObjectInt <$> fromIntegral <$> (get :: Get Int64)
 
-          | k .&. fixstrMask    == fixstr     = let n = fromIntegral $ k .&. complement fixmapMask
+          | k .&. fixstrMask    == fixstr     = let n = fromIntegral $ k .&. complement fixstrMask
                                                 in  ObjectString <$> decodeUtf8 <$> getBytes n
           | k == str8                         = do n <- fromIntegral <$> getWord8
                                                    ObjectString <$> decodeUtf8 <$> getBytes n
