@@ -2,7 +2,7 @@ name:                messagepack
 version:             0.1.0.0
 synopsis:            Message Pack serializer deserializer
 description:         Serialize instance for Message Pack Object
-homepage:            https://github.com/rsetti/messagepack
+homepage:            https://github.com/rodrigosetti/messagepack
 license:             MIT
 license-file:        LICENSE
 author:              Rodrigo Setti
