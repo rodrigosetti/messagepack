@@ -3,3 +3,8 @@
 	* Initial version: Serialize instances tested for consistency.
 	* Missing: Extension types
 
+2014-07-25 Rodrigo Setti <rodrigosetti@gmail.com>
+
+	* Fix a fatal bug: Data.MessagePack.Spec was not exposed, thus failing the
+	package installation.
+

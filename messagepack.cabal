@@ -1,5 +1,5 @@
 name               : messagepack
-version            : 0.1.0.0
+version            : 0.2.0
 synopsis           : Serialize instance for Message Pack Object
 description        : Serialize instance for Message Pack Object
 homepage           : https://github.com/rodrigosetti/messagepack
@@ -23,6 +23,7 @@ source-repository head
 
 library
   exposed-modules  : Data.MessagePack
+                   , Data.MessagePack.Spec
   default-language : Haskell2010
   build-depends    : base       == 4.*
                    , attoparsec == 0.12.*
