@@ -1,10 +1,14 @@
+2014-11-13 Rodrigo Setti <rodrigosetti@gmail.com>
+
+    * Changes `ObjectInt` data from `Int` to `Int64`, so it can be possible
+      to pack a 64bit int on a 32bit system.
+
 2014-07-25 Rodrigo Setti <rodrigosetti@gmail.com>
 
-	* Initial version: Serialize instances tested for consistency.
-	* Missing: Extension types
+    * Fix a fatal bug: Data.MessagePack.Spec was not exposed, thus failing the
+    package installation.
 
 2014-07-25 Rodrigo Setti <rodrigosetti@gmail.com>
 
-	* Fix a fatal bug: Data.MessagePack.Spec was not exposed, thus failing the
-	package installation.
-
+    * Initial version: Serialize instances tested for consistency.
+    * Missing: Extension types

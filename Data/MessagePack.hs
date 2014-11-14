@@ -26,8 +26,8 @@ import Data.Text.Encoding
 import qualified Data.ByteString  as BS
 import qualified Data.Map as M
 
-data Object = ObjectInt Int
-            | ObjectNil
+data Object = ObjectNil
+            | ObjectInt    Int64
             | ObjectBool   Bool
             | ObjectFloat  Float
             | ObjectDouble Double
