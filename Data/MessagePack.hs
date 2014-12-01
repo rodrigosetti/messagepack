@@ -102,6 +102,11 @@ instance Serialize Object where
       where
         size = BS.length bytes
         header
+          | size == 1      = putWord8 fixext1
+          | size == 2      = putWord8 fixext2
+          | size == 4      = putWord8 fixext4
+          | size == 8      = putWord8 fixext8
+          | size == 16     = putWord8 fixext16
           | size < 0x100   = putWord8 ext8  >> putWord8 (fromIntegral size)
           | size < 0x10000 = putWord8 ext16 >> putWord16be (fromIntegral size)
           | otherwise      = putWord8 ext32 >> putWord32be (fromIntegral size)
@@ -166,6 +171,16 @@ instance Serialize Object where
           | k == ext32                        = do n <- fromIntegral <$> getWord32be
                                                    ObjectExt <$> (fromIntegral <$> getWord8)
                                                              <*> getByteString n
+          | k == fixext1                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 1
+          | k == fixext2                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 2
+          | k == fixext4                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 4
+          | k == fixext8                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 8
+          | k == fixext16                     = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 16
 
           | otherwise                         = fail $ "mark byte not supported: " ++ show k
 
