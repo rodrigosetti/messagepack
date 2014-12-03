@@ -35,6 +35,7 @@ data Object = ObjectNil
             | ObjectBinary BS.ByteString
             | ObjectArray  [Object]
             | ObjectMap    (M.Map Object Object )
+            | ObjectExt    !Int8 BS.ByteString
     deriving (Eq, Ord, Show)
 
 instance Serialize Object where
@@ -97,6 +98,19 @@ instance Serialize Object where
             | size < 0x10000 = putWord8 map16 >> putWord16be (fromIntegral size)
             | otherwise      = putWord8 map32 >> putWord32be (fromIntegral size)
 
+    put (ObjectExt t bytes) = header >> putWord8 (fromIntegral t) >> putByteString bytes
+      where
+        size = BS.length bytes
+        header
+          | size == 1      = putWord8 fixext1
+          | size == 2      = putWord8 fixext2
+          | size == 4      = putWord8 fixext4
+          | size == 8      = putWord8 fixext8
+          | size == 16     = putWord8 fixext16
+          | size < 0x100   = putWord8 ext8  >> putWord8 (fromIntegral size)
+          | size < 0x10000 = putWord8 ext16 >> putWord16be (fromIntegral size)
+          | otherwise      = putWord8 ext32 >> putWord32be (fromIntegral size)
+
     get =
         getWord8 >>= getObject
       where
@@ -148,6 +162,25 @@ instance Serialize Object where
                                                    ObjectMap <$> M.fromList <$> replicateM n get
           | k == map32                        = do n <- fromIntegral <$> getWord32be
                                                    ObjectMap <$> M.fromList <$> replicateM n get
+          | k == ext8                         = do n <- fromIntegral <$> getWord8
+                                                   ObjectExt <$> (fromIntegral <$> getWord8)
+                                                             <*> getByteString n
+          | k == ext16                        = do n <- fromIntegral <$> getWord16be
+                                                   ObjectExt <$> (fromIntegral <$> getWord8)
+                                                             <*> getByteString n
+          | k == ext32                        = do n <- fromIntegral <$> getWord32be
+                                                   ObjectExt <$> (fromIntegral <$> getWord8)
+                                                             <*> getByteString n
+          | k == fixext1                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 1
+          | k == fixext2                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 2
+          | k == fixext4                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 4
+          | k == fixext8                      = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 8
+          | k == fixext16                     = ObjectExt <$> (fromIntegral <$> getWord8)
+                                                          <*> getByteString 16
 
           | otherwise                         = fail $ "mark byte not supported: " ++ show k
 
