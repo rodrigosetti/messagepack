@@ -23,12 +23,14 @@ instance Arbitrary Object where
                                     , ObjectString <$> arbitrary
                                     , ObjectBinary <$> arbitrary
                                     , ObjectArray  <$> resize (3 * n `quot` 4) arbitrary
-                                    , ObjectMap    <$> resize (3 * n `quot` 4) arbitrary ]
+                                    , ObjectMap    <$> resize (3 * n `quot` 4) arbitrary
+                                    , ObjectExt    <$> arbitrary <*> arbitrary ]
 
     shrink (ObjectString s) = map ObjectString $ shrink s
     shrink (ObjectBinary b) = map ObjectBinary $ shrink b
     shrink (ObjectArray a)  = (map ObjectArray $ shrink a) ++ a
     shrink (ObjectMap m)    = (map ObjectMap $ shrink m) ++ M.keys m ++ M.elems m
+    shrink (ObjectExt t s)  = map (ObjectExt t) $ shrink s
     shrink _                = []
 
 instance (Ord k, Arbitrary k, Arbitrary v) => Arbitrary (M.Map k v) where
