@@ -2,14 +2,15 @@
 module Main where
 
 import Control.Applicative
+import Data.Binary
+import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as LB
+import qualified Data.Map as M
 import Data.MessagePack
-import Data.Serialize
+import qualified Data.Text as T
 import Test.Framework.Providers.QuickCheck2
 import Test.Framework.TH
 import Test.QuickCheck
-import qualified Data.ByteString as BS
-import qualified Data.Map as M
-import qualified Data.Text as T
 
 main :: IO ()
 main = $(defaultMainGenerator)
@@ -52,5 +53,10 @@ instance Arbitrary T.Text where
     shrink = map T.pack . shrink . T.unpack
 
 prop_encodeDecodeIsIdentity :: Object -> Bool
-prop_encodeDecodeIsIdentity o = either error (== o) $ decode $ encode o
+prop_encodeDecodeIsIdentity o = (== o) $ decodeObj $ encodeObj o
+  where
+    encodeObj :: Object -> LB.ByteString
+    encodeObj = encode
 
+    decodeObj :: LB.ByteString -> Object
+    decodeObj = decode

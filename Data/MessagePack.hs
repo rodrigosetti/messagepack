@@ -17,14 +17,17 @@ module Data.MessagePack where
 
 import Control.Applicative
 import Control.Monad
+import Data.Binary
+import Data.Binary.Get
+import Data.Binary.IEEE754
+import Data.Binary.Put
 import Data.Bits
+import qualified Data.ByteString as BS
 import Data.Int
+import qualified Data.Map as M
 import Data.MessagePack.Spec
-import Data.Serialize
 import Data.Text (Text)
 import Data.Text.Encoding
-import qualified Data.ByteString  as BS
-import qualified Data.Map as M
 
 data Object = ObjectNil
             | ObjectInt    Int64
@@ -38,7 +41,7 @@ data Object = ObjectNil
             | ObjectExt    !Int8 BS.ByteString
     deriving (Eq, Ord, Show)
 
-instance Serialize Object where
+instance Binary Object where
 
     put (ObjectInt i)
           | i >= 0   && i <= 127        = putWord8 $ fromIntegral i
@@ -183,4 +186,3 @@ instance Serialize Object where
                                                           <*> getByteString 16
 
           | otherwise                         = fail $ "mark byte not supported: " ++ show k
-
