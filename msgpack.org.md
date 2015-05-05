@@ -9,7 +9,7 @@ data Object = ObjectNil
             | ObjectBool   Bool
             | ObjectFloat  Float
             | ObjectDouble Double
-            | ObjectString Text
+            | ObjectString ByteString
             | ObjectBinary ByteString
             | ObjectArray  [Object]
             | ObjectMap    (M.Map Object Object )

@@ -21,8 +21,6 @@ import Data.Bits
 import Data.Int
 import Data.MessagePack.Spec
 import Data.Serialize
-import Data.Text (Text)
-import Data.Text.Encoding
 import qualified Data.ByteString  as BS
 import qualified Data.Map as M
 
@@ -31,7 +29,7 @@ data Object = ObjectNil
             | ObjectBool   Bool
             | ObjectFloat  Float
             | ObjectDouble Double
-            | ObjectString Text
+            | ObjectString BS.ByteString
             | ObjectBinary BS.ByteString
             | ObjectArray  [Object]
             | ObjectMap    (M.Map Object Object )
@@ -61,10 +59,9 @@ instance Serialize Object where
     put (ObjectDouble d)   = putWord8 float64 >> putFloat64be d
 
     put (ObjectString t) =
-        header >> putByteString bytes
+        header >> putByteString t
      where
-        bytes = encodeUtf8 t
-        size  = BS.length bytes
+        size  = BS.length t
         header
           | size <= 31     = putWord8 $ fixstr .|. fromIntegral size
           | size < 0x100   = putWord8 str8  >> putWord8 (fromIntegral size)
@@ -141,13 +138,13 @@ instance Serialize Object where
           | k == int64                        = ObjectInt <$> fromIntegral <$> (get :: Get Int64)
 
           | k .&. fixstrMask    == fixstr     = let n = fromIntegral $ k .&. complement fixstrMask
-                                                in  ObjectString <$> decodeUtf8 <$> getByteString n
+                                                in  ObjectString <$> getByteString n
           | k == str8                         = do n <- fromIntegral <$> getWord8
-                                                   ObjectString <$> decodeUtf8 <$> getByteString n
+                                                   ObjectString <$> getByteString n
           | k == str16                        = do n <- fromIntegral <$> getWord16be
-                                                   ObjectString <$> decodeUtf8 <$> getByteString n
+                                                   ObjectString <$> getByteString n
           | k == str32                        = do n <- fromIntegral <$> getWord32be
-                                                   ObjectString <$> decodeUtf8 <$> getByteString n
+                                                   ObjectString <$> getByteString n
 
           | k .&. fixarrayMask  == fixarray   = let n = fromIntegral $ k .&. complement fixarrayMask
                                                 in  ObjectArray <$> replicateM n get
