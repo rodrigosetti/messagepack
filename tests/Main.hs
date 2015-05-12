@@ -9,7 +9,6 @@ import Test.Framework.TH
 import Test.QuickCheck
 import qualified Data.ByteString as BS
 import qualified Data.Map as M
-import qualified Data.Text as T
 
 main :: IO ()
 main = $(defaultMainGenerator)
@@ -44,12 +43,6 @@ instance Arbitrary BS.ByteString where
     arbitrary = BS.pack <$> arbitrary
 
     shrink = map BS.pack . shrink . BS.unpack
-
-instance Arbitrary T.Text where
-
-    arbitrary = T.pack <$> arbitrary
-
-    shrink = map T.pack . shrink . T.unpack
 
 prop_encodeDecodeIsIdentity :: Object -> Bool
 prop_encodeDecodeIsIdentity o = either error (== o) $ decode $ encode o
