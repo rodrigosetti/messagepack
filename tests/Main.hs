@@ -27,8 +27,8 @@ instance Arbitrary Object where
 
     shrink (ObjectString s) = map ObjectString $ shrink s
     shrink (ObjectBinary b) = map ObjectBinary $ shrink b
-    shrink (ObjectArray a)  = (map ObjectArray $ shrink a) ++ a
-    shrink (ObjectMap m)    = (map ObjectMap $ shrink m) ++ M.keys m ++ M.elems m
+    shrink (ObjectArray a)  = map ObjectArray (shrink a) ++ a
+    shrink (ObjectMap m)    = map ObjectMap (shrink m) ++ M.keys m ++ M.elems m
     shrink (ObjectExt t s)  = map (ObjectExt t) $ shrink s
     shrink _                = []
 
