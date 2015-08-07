@@ -21,10 +21,14 @@ import Data.Bits
 import Data.Int
 import Data.MessagePack.Spec
 import Data.Serialize
+import Data.Word
 import qualified Data.ByteString  as BS
 import qualified Data.Map as M
 
 data Object = ObjectNil
+            -- | Unsigned integers from the MsgPack protocol: uint 8, uint 16, uint 32, uint 64
+            | ObjectUInt   Word64
+            -- | Signed integers and fixnums from the MsgPack protocol: positive fixnum, negative fixnum, int 8, int 16, int 32, int 64
             | ObjectInt    Int64
             | ObjectBool   Bool
             | ObjectFloat  Float
@@ -37,18 +41,19 @@ data Object = ObjectNil
     deriving (Eq, Ord, Show)
 
 instance Serialize Object where
-
-    put (ObjectInt i)
-          | i >= 0   && i <= 127        = putWord8 $ fromIntegral i
-          | i >= -32 && i <= -1         = putWord8 $ fromIntegral i
+    put (ObjectUInt i)
           | i >= 0   && i < 0x100       = putWord8 uint8  >> putWord8    (fromIntegral i)
           | i >= 0   && i < 0x10000     = putWord8 uint16 >> putWord16be (fromIntegral i)
           | i >= 0   && i < 0x100000000 = putWord8 uint32 >> putWord32be (fromIntegral i)
-          | i >= 0                      = putWord8 uint64 >> putWord64be (fromIntegral i)
-          | i >= -0x80                  = putWord8 int8   >> putWord8    (fromIntegral i)
-          | i >= -0x8000                = putWord8 int16  >> putWord16be (fromIntegral i)
-          | i >= -0x80000000            = putWord8 int32  >> putWord32be (fromIntegral i)
-          | otherwise                   = putWord8 int64  >> putWord64be (fromIntegral i)
+          | otherwise                   = putWord8 uint64 >> putWord64be (fromIntegral i)
+
+    put (ObjectInt i)
+          | i >= 0           && i <= 127        = putWord8 $ fromIntegral i
+          | i >= -32         && i <= -1         = putWord8 $ fromIntegral i
+          | i >= -0x80       && i < 0x80        = putWord8 int8   >> putWord8    (fromIntegral i)
+          | i >= -0x8000     && i < 0x8000      = putWord8 int16  >> putWord16be (fromIntegral i)
+          | i >= -0x80000000 && i < 0x80000000  = putWord8 int32  >> putWord32be (fromIntegral i)
+          | otherwise                           = putWord8 int64  >> putWord64be (fromIntegral i)
 
     put ObjectNil          = putWord8 nil
 
@@ -128,10 +133,10 @@ instance Serialize Object where
 
           | k .&. posFixintMask == posFixint  = return $ ObjectInt $ fromIntegral k
           | k .&. negFixintMask == negFixint  = return $ ObjectInt $ fromIntegral (fromIntegral k :: Int8)
-          | k == uint8                        = ObjectInt <$> fromIntegral <$> getWord8
-          | k == uint16                       = ObjectInt <$> fromIntegral <$> getWord16be
-          | k == uint32                       = ObjectInt <$> fromIntegral <$> getWord32be
-          | k == uint64                       = ObjectInt <$> fromIntegral <$> getWord64be
+          | k == uint8                        = ObjectUInt <$> fromIntegral <$> getWord8
+          | k == uint16                       = ObjectUInt <$> fromIntegral <$> getWord16be
+          | k == uint32                       = ObjectUInt <$> fromIntegral <$> getWord32be
+          | k == uint64                       = ObjectUInt <$> getWord64be
           | k == int8                         = ObjectInt <$> fromIntegral <$> (get :: Get Int8)
           | k == int16                        = ObjectInt <$> fromIntegral <$> (get :: Get Int16)
           | k == int32                        = ObjectInt <$> fromIntegral <$> (get :: Get Int32)

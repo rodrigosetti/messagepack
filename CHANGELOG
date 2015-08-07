@@ -1,3 +1,7 @@
+2015-08-07 Will Sewell <will@pusher.com>
+
+    * Add ObjectUInt constructor for messagepack unsigned ints
+
 2015-05-07 Mike Pye <mike@pusher.com>
 
     * Remove coercion of msgpack String type to haskell Text

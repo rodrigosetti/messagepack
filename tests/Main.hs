@@ -15,6 +15,7 @@ main = $(defaultMainGenerator)
 
 instance Arbitrary Object where
     arbitrary = sized $ \n -> oneof [ return ObjectNil
+                                    , ObjectUInt   <$> arbitrary
                                     , ObjectInt    <$> arbitrary
                                     , ObjectBool   <$> arbitrary
                                     , ObjectFloat  <$> arbitrary
