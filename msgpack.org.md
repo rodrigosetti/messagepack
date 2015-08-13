@@ -5,6 +5,7 @@ This implementation defines an messagepack `Object` type, which is an instance o
 
 ```haskell
 data Object = ObjectNil
+            | ObjectUInt   Word64
             | ObjectInt    Int64
             | ObjectBool   Bool
             | ObjectFloat  Float
