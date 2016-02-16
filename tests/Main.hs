@@ -33,12 +33,6 @@ instance Arbitrary Object where
     shrink (ObjectExt t s)  = map (ObjectExt t) $ shrink s
     shrink _                = []
 
-instance (Ord k, Arbitrary k, Arbitrary v) => Arbitrary (M.Map k v) where
-
-    arbitrary = M.fromList <$> arbitrary
-
-    shrink  = map M.fromList . shrink . M.toList
-
 instance Arbitrary BS.ByteString where
 
     arbitrary = BS.pack <$> arbitrary
