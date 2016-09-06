@@ -1,5 +1,5 @@
 name               : messagepack
-version            : 0.5.1
+version            : 0.5.3
 synopsis           : Serialize instance for Message Pack Object
 description        : Serialize instance for Message Pack Object
 homepage           : https://github.com/rodrigosetti/messagepack
