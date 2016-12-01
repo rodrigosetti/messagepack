@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric #-}
 {-|
 Module      : Data.MessagePack
 Description : Object data type with Serialize instances for it
@@ -16,7 +17,9 @@ deserialized to message pack binary format, following the specification.
 module Data.MessagePack where
 
 import Control.Applicative
+import Control.DeepSeq (NFData)
 import Control.Monad
+import GHC.Generics (Generic)
 import Data.Bits
 import Data.Int
 import Data.MessagePack.Spec
@@ -38,7 +41,9 @@ data Object = ObjectNil
             | ObjectArray  [Object]
             | ObjectMap    (M.Map Object Object )
             | ObjectExt    !Int8 BS.ByteString
-    deriving (Eq, Ord, Show)
+    deriving (Eq, Ord, Show, Generic)
+
+instance NFData Object
 
 instance Serialize Object where
     put (ObjectUInt i)
