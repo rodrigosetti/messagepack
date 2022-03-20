@@ -4,14 +4,9 @@ module Main where
 import Control.Applicative
 import Data.MessagePack
 import Data.Serialize
-import Test.Framework.Providers.QuickCheck2
-import Test.Framework.TH
 import Test.QuickCheck
 import qualified Data.ByteString as BS
 import qualified Data.Map as M
-
-main :: IO ()
-main = $(defaultMainGenerator)
 
 instance Arbitrary Object where
     arbitrary = sized $ \n -> oneof [ return ObjectNil
@@ -42,3 +37,6 @@ instance Arbitrary BS.ByteString where
 prop_encodeDecodeIsIdentity :: Object -> Bool
 prop_encodeDecodeIsIdentity o = either error (== o) $ decode $ encode o
 
+return []
+main :: IO Bool
+main = $quickCheckAll
